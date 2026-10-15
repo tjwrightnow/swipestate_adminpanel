@@ -4,11 +4,19 @@ import { PlanResponse, RequestBuyPlan } from "./PlanTypes";
 const Plan = createApi({
    reducerPath: "Plan",
    baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API }),
-   tagTypes: ["GetPlanAPI"],
+   tagTypes: ["GetPlanAPI", "CreatePlan"],
    endpoints: (builder) => ({
-      GetPlan: builder.query<PlanResponse, { interval?: string }>({
-         query: ({ interval }) => ({
-            url: `/api/plans/get-plans?search[interval]=${interval}`,
+      CreatePlan: builder.mutation<PlanResponse, { data?: any }>({
+         query: ({ data }) => ({
+            url: `/api/plans/create-plans`,
+            method: "POST",
+            body: data
+         }),
+         invalidatesTags: ["CreatePlan", "GetPlanAPI"],
+      }),
+      GetPlan: builder.query<PlanResponse, { interval?: string; type?: string }>({
+         query: ({ interval, type }) => ({
+            url: `/api/plans/get-plans?search[interval]=${interval}&search[type]=${type}`,
             method: "GET",
          }),
          providesTags: ["GetPlanAPI"],
@@ -23,6 +31,6 @@ const Plan = createApi({
    }),
 });
 
-export const { useGetPlanQuery, useBuyPlanMutation } = Plan;
+export const { useCreatePlanMutation, useGetPlanQuery, useBuyPlanMutation } = Plan;
 
 export default Plan;
